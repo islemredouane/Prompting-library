@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Premium Prompts Library</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0d0df2",
+                        "accent-cyan": "#00f0ff",
+                        "background-light": "#f5f5f8",
+                        "background-dark": "#0A0C10",
+                        "terminal-bg": "#101216",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"],
+                        "mono": ["JetBrains Mono", "monospace"],
+                    },
+                    borderRadius: { "DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+    <style>
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #0d0df2;
+            border-radius: 4px;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        .cinematic-glow {
+            background: radial-gradient(circle at 50% 0%, rgba(13, 13, 242, 0.15) 0%, rgba(16, 16, 34, 0) 60%);
+        }
+
+        .glass-nav {
+            background: rgba(10, 12, 16, 0.8);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .terminal-window {
+            background: #0d0e12;
+            border: 1px solid #1f2937;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Syntax Colors */
+        .color-header {
+            color: #f472b6;
+            font-weight: bold;
+        }
+
+        .color-key {
+            color: #818cf8;
+        }
+
+        .color-var {
+            color: #34d399;
+        }
+
+        .color-separator {
+            color: #4b5563;
+        }
+
+        .color-highlight {
+            color: #fbbf24;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: #0d0df2;
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 9999px;
+            font-weight: bold;
+            box-shadow: 0 10px 30px rgba(13, 13, 242, 0.4);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 1000;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        @keyframes shimmer {
+            100% {
+                transform: translateX(100%);
+            }
+        }
+
+        .cursor-glow {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(13, 13, 242, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 0;
+            transform: translate(-50%, -50%);
+            transition: transform 0.1s ease-out;
+        }
+
+        .cursor-dot {
+            width: 8px;
+            height: 8px;
+            background: #0d0df2;
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 1000;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 15px #0d0df2;
+        }
+
+        .cursor-dot.active {
+            transform: translate(-50%, -50%) scale(5);
+            background: rgba(13, 13, 242, 0.2);
+            border: 1px solid #0d0df2;
+        }
+    </style>
+</head>
+
+<body
+    class="bg-background-light dark:bg-background-dark font-display min-h-screen text-slate-900 dark:text-slate-100 selection:bg-primary selection:text-white overflow-x-hidden">
+    <div class="relative flex min-h-screen w-full flex-col overflow-x-hidden cinematic-glow">
+        <div id="copy-toast" class="toast">Prompt copied successfully!</div>
+
+        <div class="fixed top-6 left-0 right-0 z-50 flex justify-center px-4">
+            <header
+                class="glass-nav flex w-full max-w-4xl items-center justify-between rounded-full py-2.5 pl-3 pr-2.5 shadow-2xl shadow-primary/5">
+                <div class="flex items-center gap-3">
+                    <div class="relative flex items-center justify-center">
+                        <div class="absolute inset-0 rounded-full bg-primary/30 blur-sm"></div>
+                        <img alt="User avatar" class="relative size-10 rounded-full border border-white/10 object-cover"
+                            src="photo_5881962724558834466_x.jpg" />
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-sm font-bold leading-tight tracking-wide text-white">isl8m.r</span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button
+                        class="group flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-primary/25 transition-all hover:bg-primary/90 hover:shadow-primary/40">
+                        <span class="uppercase">PROMPT LIBRARY</span>
+                    </button>
+                </div>
+            </header>
+        </div>
+
+        <main class="relative z-10 flex flex-grow flex-col items-center px-6 pt-32 pb-20">
+            <div class="absolute inset-0 z-0 pointer-events-none opacity-20"
+                style="background-image: radial-gradient(#33334d 1px, transparent 1px); background-size: 40px 40px;">
+            </div>
+
+            <div class="relative z-10 flex w-full max-w-[960px] flex-col items-center text-center mb-24">
+                <div
+                    class="mb-8 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-4 py-1.5 backdrop-blur-sm">
+                    <span class="flex size-2 rounded-full bg-primary shadow-[0_0_8px_rgba(13,13,242,0.8)]"></span>
+                    <span class="text-xs font-semibold uppercase tracking-widest text-primary/80">Professional AI Prompt
+                        Library</span>
+                </div>
+
+                <h1
+                    class="mb-6 max-w-4xl text-5xl font-bold leading-[1.1] tracking-tight text-white md:text-7xl lg:text-[5.5rem]">
+                    Design Like an <br />
+                    <span
+                        class="text-transparent bg-clip-text bg-gradient-to-r from-white via-slate-200 to-slate-400">Elite
+                        Creative Agency</span>
+                </h1>
+
+                <p class="mb-10 max-w-2xl text-lg leading-relaxed text-slate-400 md:text-xl">
+                    Access the structured prompt engineering system used for high-end creative outputs. Curated, tested,
+                    and refined for professional workflows.
+                </p>
+
+                <div class="flex w-full flex-col items-center justify-center gap-4 sm:flex-row">
+                    <button id="cta-button"
+                        onclick="document.getElementById('prompts-section').scrollIntoView({behavior: 'smooth'})"
+                        class="group relative flex min-w-[200px] items-center justify-center gap-3 overflow-hidden rounded-full bg-primary px-8 py-4 text-base font-bold text-white shadow-[0_0_40px_-10px_rgba(13,13,242,0.6)] transition-all hover:scale-[1.02] hover:shadow-[0_0_60px_-15px_rgba(13,13,242,0.7)]">
+                        <div
+                            class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:animate-[shimmer_1.5s_infinite]">
+                        </div>
+                        <span class="material-symbols-outlined">auto_awesome</span>
+                        <span>Explore Prompts</span>
+                    </button>
+                </div>
+
+                <div class="mt-16 flex flex-wrap justify-center gap-8 md:gap-16 border-t border-white/5 pt-10 px-10">
+                    <div class="flex flex-col items-center gap-1">
+                        <span class="text-4xl font-bold text-white tracking-tight">9+</span>
+                        <span class="text-xs font-bold uppercase tracking-widest text-primary">PREMIUM PROMPTS</span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="prompts-section" class="w-full max-w-7xl flex flex-col gap-24 relative z-20">
+
+                <!-- 1. INSTAGRAM POST -->
+                <div class="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
+                    <div class="relative w-full lg:w-5/12 aspect-[4/5] flex items-center justify-center group">
+                        <div
+                            class="absolute inset-0 bg-primary/5 rounded-[2rem] blur-2xl transform rotate-[-2deg] transition-all duration-500 group-hover:bg-primary/10 group-hover:rotate-0">
+                        </div>
+                        <div
+                            class="relative w-full h-full bg-[#101216] border border-white/10 rounded-[2rem] p-6 shadow-2xl overflow-hidden transform transition-transform duration-500 group-hover:scale-[1.02]">
+                            <div class="flex items-center gap-3 mb-6">
+                                <div class="w-8 h-8 rounded-full bg-gradient-to-br from-pink-500 to-orange-500"></div>
+                                <div class="w-24 h-3 rounded-full bg-white/10"></div>
+                            </div>
+                            <div
+                                class="w-full aspect-square rounded-xl bg-gradient-to-br from-[#1a1c24] to-[#0d0e12] flex items-center justify-center border border-white/5 relative overflow-hidden">
+                                <span class="material-symbols-outlined text-6xl text-white/5">grid_view</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="w-full lg:w-7/12 flex flex-col justify-center">
+                        <div class="flex gap-3 mb-6">
+                            <span
+                                class="px-3 py-1 bg-white/5 border border-white/10 rounded-md text-[10px] uppercase tracking-wider font-mono text-slate-400">Social
+                                Media</span>
+                        </div>
+                        <h2 class="text-4xl md:text-5xl font-bold text-white mb-2 tracking-tight">INSTAGRAM POST <span
+                                class="text-slate-500">(4:5)</span></h2>
+                        <div class="w-32 h-1 bg-primary mb-6"></div>
+                        <p class="text-slate-400 mb-10 text-lg leading-relaxed">Art Director + 3D Artist combo. Built-in
+                            typography logic and color psychology system.</p>
+                        <div class="terminal-window rounded-xl overflow-hidden font-mono text-sm relative group">
+                            <div
+                                class="bg-[#1a1c23] px-4 py-2 border-b border-white/5 flex items-center justify-between">
+                                <span class="text-xs text-slate-500 tracking-widest uppercase">PROMPT #01</span>
+                                <button onclick="copyPrompt('prompt-1')"
+                                    class="flex items-center gap-2 bg-green-500/10 hover:bg-green-500/20 text-green-400 px-3 py-1 rounded text-xs font-bold transition-colors border border-green-500/20">
+                                    <span class="material-symbols-outlined text-[14px]">content_copy</span> COPY
+                                </button>
+                            </div>
+                            <div class="p-6 custom-scrollbar max-h-[350px] overflow-y-auto">
+                                <pre id="prompt-1" class="whitespace-pre-wrap text-slate-300 leading-relaxed"><span class="color-header">Act as an elite creative agency</span> (Art Director + 3D Artist + Typography Director + Brand Strategist + Marketing Psychologist).
+
+<span class="color-key">FORMAT:</span> <span class="color-highlight">4:5 – 1080x1350</span>
+<span class="color-key">Grid System:</span>
+- <span class="color-highlight">Top 30%</span> → Hook Zone
+- <span class="color-highlight">Middle 50%</span> → Main Visual Focus
+- <span class="color-highlight">Bottom 20%</span> → CTA / Branding
+Respect safe margins.
+
+<span class="color-separator">────────────────</span>
+<span class="color-key">Brand Name:</span> <span class="color-var">(اكتب اسم البراند)</span>
+<span class="color-key">Industry:</span> <span class="color-var">(اكتب المجال)</span>
+<span class="color-key">Target Audience:</span> <span class="color-var">(من هو الجمهور؟)</span>
+<span class="color-key">Goal:</span> <span class="color-var">(تعليمي / بيع / جذب / توعية)</span>
+<span class="color-key">Topic:</span> <span class="color-var">(موضوع البوست)</span>
+<span class="color-key">Primary Headline:</span> <span class="color-var">"(العنوان الرئيسي)"</span>
+
+<span class="color-separator">────────────────</span>
+<span class="color-header">TYPOGRAPHY ENGINE:</span>
+Auto-select based on Industry:
+- <span class="color-highlight">Tech</span> → Geometric sans
+- <span class="color-highlight">Luxury</span> → Elegant serif
+- <span class="color-highlight">Edu</span> → Structured bold sans
+- <span class="color-highlight">Creative</span> → Display fonts
+
+<span class="color-separator">────────────────</span>
+<span class="color-header">COLOR SYSTEM:</span>
+Apply <span class="color-highlight">60-30-10 rule</span>.
+- <span class="color-highlight">Blue</span> → Trust/Tech
+- <span class="color-highlight">Red</span> → Urgency
+- <span class="color-highlight">Purple</span> → Innovation
+
+<span class="color-separator">────────────────</span>
+<span class="color-header">3D LOGIC:</span>
+- Symbolic 3D elements
+- Realistic depth of field
+- Mobile optimized scroll stopping.</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. INSTAGRAM REEL COVER -->
+                <div class="flex flex-col lg:flex-row-reverse items-center gap-12 lg:gap-20">
+                    <div
+                        class="relative w-full lg:w-5/12 aspect-[9/16] max-h-[600px] flex items-center justify-center group">
+                        <div
+                            class="absolute inset-0 bg-primary/10 rounded-[2rem] blur-2xl transform rotate-[2deg] transition-all duration-500 group-hover:bg-primary/20 group-hover:rotate-0">
+                        </div>
+                        <div
+                            class="relative w-full h-full bg-[#101216] border border-white/10 rounded-[2rem] p-4 shadow-2xl overflow-hidden transform transition-transform duration-500 group-hover:scale-[1.02]">
+                            <div
+                                class="w-full h-full rounded-xl bg-gradient-to-b from-[#1a1c24] to-[#0d0e12] flex flex-col relative overflow-hidden">
+                                <div
+                                    class="absolute top-4 right-4 z-10 w-8 h-8 bg-black/50 backdrop-blur rounded-full flex items-center justify-center">
+                                    <span class="material-symbols-outlined text-white text-sm">movie</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="w-full lg:w-7/12 flex flex-col justify-center">
+                        <div class="flex gap-3 mb-6">
+                            <span
+                                class="px-3 py-1 bg-white/5 border border-white/10 rounded-md text-[10px] uppercase tracking-wider font-mono text-slate-400">Video</span>
+                        </div>
+                        <h2 class="text-4xl md:text-5xl font-bold text-white mb-2 tracking-tight">INSTAGRAM REEL COVER
+                        </h2>
+                        <div class="w-32 h-1 bg-primary mb-6"></div>
+                        <p class="text-slate-400 mb-10 text-lg leading-relaxed">Viral short-form studio. Curiosity,
+                            urgency, and scroll interruption logic.</p>
+                        <div class="terminal-window rounded-xl overflow-hidden font-mono text-sm relative group">
+                            <div
+                                class="bg-[#1a1c23] px-4 py-2 border-b border-white/5 flex items-center justify-between">
+                                <span class="text-xs text-slate-500 tracking-widest uppercase">PROMPT #02</span>
+                                <button onclick="copyPrompt('prompt-2')"
+                                    class="flex items-center gap-2 bg-green-500/10 hover:bg-green-500/20 text-green-400 px-3 py-1 rounded text-xs font-bold transition-colors border border-green-500/20">
+                                    <span class="material-symbols-outlined text-[14px]">content_copy</span> COPY
+                                </button>
+                            </div>
+                            <div class="p-6 custom-scrollbar max-h-[350px] overflow-y-auto">
+                                <pre id="prompt-2" class="whitespace-pre-wrap text-slate-300 leading-relaxed"><span class="color-header">Act as a viral short-form creative studio.</span>
+
+<span class="color-key">FORMAT:</span> <span class="color-highlight">9:16 vertical</span>
+<span class="color-key">Video Topic:</span> <span class="color-var">(موضوع الفيديو)</span> 
+<span class="color-key">Hook Title:</span> <span class="color-highlight">"(عنوان قوي جداً)"</span>
+<span class="color-key">Micro Trigger:</span> <span class="color-var">(لا تفوت / مهم / للنهاية)</span>
+
+<span class="color-separator">────────────────</span>
+<span class="color-header">GRID DYNAMICS:</span>
+- <span class="color-highlight">Upper third</span> → Headline dominance
+- <span class="color-highlight">Center</span> → 3D focal point
+- <span class="color-highlight">Lower zone</span> → Interaction hooks
+
+<span class="color-separator">────────────────</span>
+<span class="color-header">COLOR & LIGHT:</span>
+- High contrast palette
+- Cinematic rim lighting
+- Volumetric depth</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. YOUTUBE THUMBNAIL -->
+                <div class="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
+                    <div class="relative w-full lg:w-6/12 aspect-[16/9] flex items-center justify-center group">
+                        <div
+                            class="absolute inset-0 bg-red-500/5 rounded-[2rem] blur-2xl transform rotate-[-1deg] transition-all duration-500 group-hover:bg-red-500/10 group-hover:rotate-0">
+                        </div>
+                        <div
+                            class="relative w-full h-full bg-[#101216] border border-white/10 rounded-[2rem] p-3 shadow-2xl overflow-hidden transform transition-transform duration-500 group-hover:scale-[1.02]">
+                            <div
+                                class="w-full h-full rounded-xl bg-gradient-to-br from-[#1a1c24] to-[#0d0e12] flex items-center justify-center border border-white/5 relative">
+                                <span class="material-symbols-outlined text-6xl text-red-500/20">play_arrow</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="w-full lg:w-6/12 flex flex-col justify-center">
+                        <div class="flex gap-3 mb-6">
+                            <span
+                                class="px-3 py-1 bg-white/5 border border-white/10 rounded-md text-[10px] uppercase tracking-wider font-mono text-slate-400">YouTube</span>
+                        </div>
+                        <h2 class="text-4xl md:text-5xl font-bold text-white mb-2 tracking-tight">YOUTUBE THUMBNAIL</h2>
+                        <div class="w-32 h-1 bg-primary mb-6"></div>
+                        <p class="text-slate-400 mb-10 text-lg leading-relaxed">CTR-focused team logic. Subject
+                            separation and massive bold typography pairings.</p>
+                        <div class="terminal-window rounded-xl overflow-hidden font-mono text-sm relative group">
+                            <div
+                                class="bg-[#1a1c23] px-4 py-2 border-b border-white/5 flex items-center justify-between">
+                                <span class="text-xs text-slate-500 tracking-widest uppercase">PROMPT #03</span>
+                                <button onclick="copyPrompt('prompt-3')"
+                                    class="flex items-center gap-2 bg-green-500/10 hover:bg-green-500/20 text-green-400 px-3 py-1 rounded text-xs font-bold transition-colors border border-green-500/20">
+                                    <span class="material-symbols-outlined text-[14px]">content_copy</span> COPY
+                                </button>
+                            </div>
+                            <div class="p-6 custom-scrollbar max-h-[350px] overflow-y-auto">
+                                <pre id="prompt-3" class="whitespace-pre-wrap text-slate-300 leading-relaxed"><span class="color-header">Act as a CTR-focused YouTube thumbnail team.</span>
+
+<span class="color-key">FORMAT:</span> <span class="color-highlight">16:9 – 1280x720</span>
+<span class="color-key">Composition:</span> Subject (Right) / Massive Text (Left)
+
+<span class="color-key">Topic:</span> <span class="color-var">(موضوع الفيديو)</span>
+<span class="color-key">Headline:</span> <span class="color-highlight">"(3-4 كلمات قوية)"</span>
+<span class="color-key">Emotion:</span> <span class="color-var">(صدمة / فضول / نجاح)</span>
+
+<span class="color-separator">────────────────</span>
+<span class="color-header">VISUAL HIERARCHY:</span>
+- Text Shadow Separation
+- Vibrant saturated accents
+- Subject "glow" effect
+- <span class="color-highlight">Goal:</span> Maximize Click-Through Rate.</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. TIKTOK COVER -->
+                <div class="flex flex-col lg:flex-row-reverse items-center gap-12 lg:gap-20">
+                    <div
+                        class="relative w-full lg:w-5/12 aspect-[9/16] max-h-[600px] flex items-center justify-center group">
+                        <div
+                            class="absolute inset-0 bg-purple-500/10 rounded-[2rem] blur-2xl transform rotate-[2deg] transition-all duration-500 group-hover:bg-purple-500/20 group-hover:rotate-0">
+                        </div>
+                        <div
+                            class="relative w-full h-full bg-[#101216] border border-white/10 rounded-[2rem] p-4 shadow-2xl overflow-hidden transform transition-transform duration-500 group-hover:scale-[1.02]">
+                            <div
+                                class="w-full h-full rounded-xl bg-gradient-to-b from-[#1a1c24] to-[#0d0e12] flex items-end relative overflow-hidden">
+                                <div class="w-full p-4 bg-gradient-to-t from-black/90 to-transparent pb-16">
+                                    <div class="w-2/3 h-4 rounded bg-white/20 mb-2"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="w-full lg:w-7/12 flex flex-col justify-center">
+                        <div class="flex gap-3 mb-6">
+                            <span
+                                class="px-3 py-1 bg-white/5 border border-white/10 rounded-md text-[10px] uppercase tracking-wider font-mono text-slate-400">Short
+                                Form</span>
+                        </div>
+                        <h2 class="text-4xl md:text-5xl font-bold text-white mb-2 tracking-tight">TIKTOK COVER</h2>
+                        <div class="w-32 h-1 bg-primary mb-6"></div>
+                        <p class="text-slate-400 mb-10 text-lg leading-relaxed">Gen-Z viral design style. Fast,
+                            energetic, and scroll-stopping visuals.</p>
+                        <div class="terminal-window rounded-xl overflow-hidden font-mono text-sm relative group">
+                            <div
+                                class="bg-[#1a1c23] px-4 py-2 border-b border-white/5 flex items-center justify-between">
+                                <span class="text-xs text-slate-500 tracking-widest uppercase">PROMPT #04</span>
+                                <button onclick="copyPrompt('prompt-4')"
+                                    class="flex items-center gap-2 bg-green-500/10 hover:bg-green-500/20 text-green-400 px-3 py-1 rounded text-xs font-bold transition-colors border border-green-500/20">
+                                    <span class="material-symbols-outlined text-[14px]">content_copy</span> COPY
+                                </button>
+                            </div>
+                            <div class="p-6 custom-scrollbar max-h-[350px] overflow-y-auto">
+                                <pre id="prompt-4" class="whitespace-pre-wrap text-slate-300 leading-relaxed"><span class="color-header">Act as a Gen-Z viral design studio.</span>
+
+<span class="color-key">FORMAT:</span> <span class="color-highlight">9:16 vertical</span>
+<span class="color-key">Topic:</span> <span class="color-var">(موضوع الفيديو)</span> 
+<span class="color-key">Main Hook:</span> <span class="color-highlight">"(عنوان جذاب)"</span>
+
+<span class="color-separator">────────────────</span>
+<span class="color-header">STYLE LOGIC:</span>
+- Vibrant <span class="color-highlight">Neon</span> accents
+- Dynamic 3D floating icons
+- Aggressive bold typography
+- Lo-fi cinematic fusion</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5. CAROUSEL SYSTEM -->
+                <div class="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
+                    <div class="relative w-full lg:w-5/12 aspect-[4/5] flex items-center justify-center group">
+                        <div
+                            class="absolute inset-0 bg-blue-500/10 rounded-[2rem] blur-2xl transform rotate-[-2deg] transition-all duration-500 group-hover:bg-blue-500/20 group-hover:rotate-0">
+                        </div>
+                        <div
+                            class="relative w-full h-full bg-[#101216] border border-white/10 rounded-[2rem] p-6 shadow-2xl overflow-hidden transform transition-transform duration-500 group-hover:scale-[1.02]">
+                            <div class="flex gap-4 overflow-hidden h-full">
+                                <div
+                                    class="w-3/4 h-full rounded-xl bg-gradient-to-br from-[#1a1c24] to-[#0d0e12] shrink-0 border border-white/5">
+                                </div>
+                                <div
+                                    class="w-3/4 h-full rounded-xl bg-gradient-to-br from-[#1a1c24] to-[#0d0e12] shrink-0 border border-white/5 opacity-50">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="w-full lg:w-7/12 flex flex-col justify-center">
+                        <div class="flex gap-3 mb-6">
+                            <span
+                                class="px-3 py-1 bg-white/5 border border-white/10 rounded-md text-[10px] uppercase tracking-wider font-mono text-slate-400">Education</span>
+                        </div>
+                        <h2 class="text-4xl md:text-5xl font-bold text-white mb-2 tracking-tight">CAROUSEL SYSTEM</h2>
+                        <div class="w-32 h-1 bg-primary mb-6"></div>
+                        <p class="text-slate-400 mb-10 text-lg leading-relaxed">Structured IG Slide system. Educational
+                            clarity with consistent brand framing.</p>
+                        <div class="terminal-window rounded-xl overflow-hidden font-mono text-sm relative group">
+                            <div
+                                class="bg-[#1a1c23] px-4 py-2 border-b border-white/5 flex items-center justify-between">
+                                <span class="text-xs text-slate-500 tracking-widest uppercase">PROMPT #05</span>
+                                <button onclick="copyPrompt('prompt-5')"
+                                    class="flex items-center gap-2 bg-green-500/10 hover:bg-green-500/20 text-green-400 px-3 py-1 rounded text-xs font-bold transition-colors border border-green-500/20">
+                                    <span class="material-symbols-outlined text-[14px]">content_copy</span> COPY
+                                </button>
+                            </div>
+                            <div class="p-6 custom-scrollbar max-h-[350px] overflow-y-auto">
+                                <pre id="prompt-5" class="whitespace-pre-wrap text-slate-300 leading-relaxed"><span class="color-header">Create Instagram Carousel (4:5).</span>
+
+<span class="color-key">Topic:</span> <span class="color-var">(موضوع السلسلة)</span>
+<span class="color-key">Total Slides:</span> <span class="color-highlight">(7-10)</span>
+
+<span class="color-separator">────────────────</span>
+<span class="color-header">FLOW DESIGN:</span>
+- <span class="color-highlight">Slide 1:</span> Master Hook
+- <span class="color-highlight">Slide 2:</span> Problem State
+- <span class="color-highlight">Slide 3-6:</span> Solution Logic
+- <span class="color-highlight">Slide 7:</span> Final Call to Action
+
+<span class="color-separator">────────────────</span>
+<span class="color-header">SYSTEM ARCHITECTURE:</span>
+1. Narrative consistency
+2. Visual transition logic
+3. Authority-led spacing</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 6. AD CREATIVE -->
+                <div class="flex flex-col lg:flex-row-reverse items-center gap-12 lg:gap-20">
+                    <div class="relative w-full lg:w-5/12 aspect-square flex items-center justify-center group">
+                        <div
+                            class="absolute inset-0 bg-orange-500/10 rounded-[2rem] blur-2xl transform rotate-[2deg] transition-all duration-500 group-hover:bg-orange-500/20 group-hover:rotate-0">
+                        </div>
+                        <div
+                            class="relative w-full h-full bg-[#101216] border border-white/10 rounded-[2rem] p-6 shadow-2xl overflow-hidden transform transition-transform duration-500 group-hover:scale-[1.02]">
+                            <div
+                                class="w-full h-full rounded-xl bg-gradient-to-br from-[#1a1c24] to-[#0d0e12] flex items-center justify-center border border-white/5 relative">
+                                <span class="material-symbols-outlined text-6xl text-orange-500/20">shopping_bag</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="w-full lg:w-7/12 flex flex-col justify-center">
+                        <div class="flex gap-3 mb-6">
+                            <span
+                                class="px-3 py-1 bg-white/5 border border-white/10 rounded-md text-[10px] uppercase tracking-wider font-mono text-slate-400">Ads</span>
+                        </div>
+                        <h2 class="text-4xl md:text-5xl font-bold text-white mb-2 tracking-tight">AD CREATIVE</h2>
+                        <div class="w-32 h-1 bg-primary mb-6"></div>
+                        <p class="text-slate-400 mb-10 text-lg leading-relaxed">Performance marketing design.
+                            Strategy-first visuals optimized for lead conversion.</p>
+                        <div class="terminal-window rounded-xl overflow-hidden font-mono text-sm relative group">
+                            <div
+                                class="bg-[#1a1c23] px-4 py-2 border-b border-white/5 flex items-center justify-between">
+                                <span class="text-xs text-slate-500 tracking-widest uppercase">PROMPT #06</span>
+                                <button onclick="copyPrompt('prompt-6')"
+                                    class="flex items-center gap-2 bg-green-500/10 hover:bg-green-500/20 text-green-400 px-3 py-1 rounded text-xs font-bold transition-colors border border-green-500/20">
+                                    <span class="material-symbols-outlined text-[14px]">content_copy</span> COPY
+                                </button>
+                            </div>
+                            <div class="p-6 custom-scrollbar max-h-[350px] overflow-y-auto">
+                                <pre id="prompt-6" class="whitespace-pre-wrap text-slate-300 leading-relaxed"><span class="color-header">Act as performance marketing experts.</span>
+
+<span class="color-key">Product:</span> <span class="color-var">(المنتج)</span>
+<span class="color-key">Offer:</span> <span class="color-highlight">(خصم 50% / عرض خاص)</span>
+<span class="color-key">Headline:</span> <span class="color-highlight">"(عنوان بيعي قوي)"</span>
+
+<span class="color-separator">────────────────</span>
+<span class="color-header">AD STRUCTURE:</span>
+- <span class="color-highlight">60%</span> Product Focus
+- <span class="color-highlight">30%</span> Offer Clarity
+- <span class="color-highlight">10%</span> CTA Anchor
+
+<span class="color-separator">────────────────</span>
+<span class="color-header">PSYCHOLOGY:</span>
+- Urgency triggers
+- Trust indicators
+- Immediate benefit visualization</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 7. LOGO SYSTEM -->
+                <div class="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
+                    <div class="relative w-full lg:w-5/12 aspect-square flex items-center justify-center group">
+                        <div
+                            class="absolute inset-0 bg-white/5 rounded-[2rem] blur-2xl transform rotate-[-2deg] transition-all duration-500 group-hover:bg-white/10 group-hover:rotate-0">
+                        </div>
+                        <div
+                            class="relative w-full h-full bg-[#101216] border border-white/10 rounded-[2rem] p-10 shadow-2xl overflow-hidden transform transition-transform duration-500 group-hover:scale-[1.02]">
+                            <div class="w-full h-full rounded-xl flex items-center justify-center">
+                                <span class="material-symbols-outlined text-6xl text-white">token</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="w-full lg:w-7/12 flex flex-col justify-center">
+                        <div class="flex gap-3 mb-6">
+                            <span
+                                class="px-3 py-1 bg-white/5 border border-white/10 rounded-md text-[10px] uppercase tracking-wider font-mono text-slate-400">Branding</span>
+                        </div>
+                        <h2 class="text-4xl md:text-5xl font-bold text-white mb-2 tracking-tight">LOGO SYSTEM</h2>
+                        <div class="w-32 h-1 bg-primary mb-6"></div>
+                        <p class="text-slate-400 mb-10 text-lg leading-relaxed">Global branding studio logic.
+                            Professional vector-ready precision for primary and favicon assets.</p>
+                        <div class="terminal-window rounded-xl overflow-hidden font-mono text-sm relative group">
+                            <div
+                                class="bg-[#1a1c23] px-4 py-2 border-b border-white/5 flex items-center justify-between">
+                                <span class="text-xs text-slate-500 tracking-widest uppercase">PROMPT #07</span>
+                                <button onclick="copyPrompt('prompt-7')"
+                                    class="flex items-center gap-2 bg-green-500/10 hover:bg-green-500/20 text-green-400 px-3 py-1 rounded text-xs font-bold transition-colors border border-green-500/20">
+                                    <span class="material-symbols-outlined text-[14px]">content_copy</span> COPY
+                                </button>
+                            </div>
+                            <div class="p-6 custom-scrollbar max-h-[350px] overflow-y-auto">
+                                <pre id="prompt-7" class="whitespace-pre-wrap text-slate-300 leading-relaxed"><span class="color-header">Act as a global branding studio.</span>
+
+<span class="color-key">Brand Name:</span> <span class="color-var">(الاسم)</span>
+<span class="color-key">Industry:</span> <span class="color-var">(المجال)</span>
+<span class="color-key">Persona:</span> <span class="color-highlight">(فاخر / تقني / جريء)</span>
+
+<span class="color-separator">────────────────</span>
+<span class="color-header">CORE PRINCIPLES:</span>
+- Geometric perfection
+- Scalable vector logic
+- Timeless monochrome utility
+- Industry-standard symbolism</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 8. PRODUCT LAUNCH VISUAL -->
+                <div class="flex flex-col lg:flex-row-reverse items-center gap-12 lg:gap-20">
+                    <div class="relative w-full lg:w-6/12 aspect-video flex items-center justify-center group">
+                        <div
+                            class="absolute inset-0 bg-teal-500/10 rounded-[2rem] blur-2xl transform rotate-[1deg] transition-all duration-500 group-hover:bg-teal-500/20 group-hover:rotate-0">
+                        </div>
+                        <div
+                            class="relative w-full h-full bg-[#101216] border border-white/10 rounded-[2rem] p-3 shadow-2xl overflow-hidden transform transition-transform duration-500 group-hover:scale-[1.02]">
+                            <div
+                                class="w-full h-full rounded-xl bg-gradient-to-br from-[#1a1c24] to-[#0d0e12] flex items-center justify-center border border-white/5 relative">
+                                <span class="material-symbols-outlined text-6xl text-teal-500/20">rocket_launch</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="w-full lg:w-6/12 flex flex-col justify-center">
+                        <div class="flex gap-3 mb-6">
+                            <span
+                                class="px-3 py-1 bg-white/5 border border-white/10 rounded-md text-[10px] uppercase tracking-wider font-mono text-slate-400">Launch</span>
+                        </div>
+                        <h2 class="text-4xl md:text-5xl font-bold text-white mb-2 tracking-tight">PRODUCT LAUNCH VISUAL
+                        </h2>
+                        <div class="w-32 h-1 bg-primary mb-6"></div>
+                        <p class="text-slate-400 mb-10 text-lg leading-relaxed">Cinematic product reveal. Spotlight
+                            stage lighting and floating feature anchors.</p>
+                        <div class="terminal-window rounded-xl overflow-hidden font-mono text-sm relative group">
+                            <div
+                                class="bg-[#1a1c23] px-4 py-2 border-b border-white/5 flex items-center justify-between">
+                                <span class="text-xs text-slate-500 tracking-widest uppercase">PROMPT #08</span>
+                                <button onclick="copyPrompt('prompt-8')"
+                                    class="flex items-center gap-2 bg-green-500/10 hover:bg-green-500/20 text-green-400 px-3 py-1 rounded text-xs font-bold transition-colors border border-green-500/20">
+                                    <span class="material-symbols-outlined text-[14px]">content_copy</span> COPY
+                                </button>
+                            </div>
+                            <div class="p-6 custom-scrollbar max-h-[350px] overflow-y-auto">
+                                <pre id="prompt-8" class="whitespace-pre-wrap text-slate-300 leading-relaxed"><span class="color-header">Design a cinematic product launch.</span>
+
+<span class="color-key">Product:</span> <span class="color-var">(الاسم)</span>
+<span class="color-key">Launch Date:</span> <span class="color-var">(التاريخ)</span>
+
+<span class="color-separator">────────────────</span>
+<span class="color-header">VISUAL STYLE:</span>
+- <span class="color-highlight">Spotlight</span> staging
+- Volumetric fog/haze
+- High-end macro detail
+- Premium shadow separation</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 9. COURSE COVER -->
+                <div class="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
+                    <div class="relative w-full lg:w-5/12 aspect-[4/5] flex items-center justify-center group">
+                        <div
+                            class="absolute inset-0 bg-yellow-500/10 rounded-[2rem] blur-2xl transform rotate-[-1deg] transition-all duration-500 group-hover:bg-yellow-500/20 group-hover:rotate-0">
+                        </div>
+                        <div
+                            class="relative w-full h-full bg-[#101216] border border-white/10 rounded-[2rem] p-6 shadow-2xl overflow-hidden transform transition-transform duration-500 group-hover:scale-[1.02]">
+                            <div
+                                class="w-full h-full rounded-xl bg-gradient-to-br from-[#1a1c24] to-[#0d0e12] flex items-center justify-center border border-white/5 relative">
+                                <span class="material-symbols-outlined text-6xl text-yellow-500/20">school</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="w-full lg:w-7/12 flex flex-col justify-center">
+                        <div class="flex gap-3 mb-6">
+                            <span
+                                class="px-3 py-1 bg-white/5 border border-white/10 rounded-md text-[10px] uppercase tracking-wider font-mono text-slate-400">Course</span>
+                        </div>
+                        <h2 class="text-4xl md:text-5xl font-bold text-white mb-2 tracking-tight">COURSE COVER</h2>
+                        <div class="w-32 h-1 bg-primary mb-6"></div>
+                        <p class="text-slate-400 mb-10 text-lg leading-relaxed">Authority and clarity tone. Academic
+                            symbolic elements for professional digital products.</p>
+                        <div class="terminal-window rounded-xl overflow-hidden font-mono text-sm relative group">
+                            <div
+                                class="bg-[#1a1c23] px-4 py-2 border-b border-white/5 flex items-center justify-between">
+                                <span class="text-xs text-slate-500 tracking-widest uppercase">PROMPT #09</span>
+                                <button onclick="copyPrompt('prompt-9')"
+                                    class="flex items-center gap-2 bg-green-500/10 hover:bg-green-500/20 text-green-400 px-3 py-1 rounded text-xs font-bold transition-colors border border-green-500/20">
+                                    <span class="material-symbols-outlined text-[14px]">content_copy</span> COPY
+                                </button>
+                            </div>
+                            <div class="p-6 custom-scrollbar max-h-[350px] overflow-y-auto">
+                                <pre id="prompt-9" class="whitespace-pre-wrap text-slate-300 leading-relaxed"><span class="color-header">Design an authoritative course cover.</span>
+
+<span class="color-key">Course:</span> <span class="color-var">(اسم الدورة)</span>
+<span class="color-key">Goal:</span> <span class="color-highlight">(تحقيق النتيجة X)</span>
+
+<span class="color-separator">────────────────</span>
+<span class="color-header">DESIGN ENGINE:</span>
+- <span class="color-highlight">Authority</span> bold sans fonts
+- Clean structured margins
+- Symbolic educational 3D assets
+- <span class="color-highlight">Trust:</span> Professional clarity.</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 10. APP PROMO -->
+                <div class="flex flex-col lg:flex-row-reverse items-center gap-12 lg:gap-20">
+                    <div class="relative w-full lg:w-5/12 aspect-square flex items-center justify-center group">
+                        <div
+                            class="absolute inset-0 bg-indigo-500/10 rounded-[2rem] blur-2xl transform rotate-[2deg] transition-all duration-500 group-hover:bg-indigo-500/20 group-hover:rotate-0">
+                        </div>
+                        <div
+                            class="relative w-full h-full bg-[#101216] border border-white/10 rounded-[2rem] p-6 shadow-2xl overflow-hidden transform transition-transform duration-500 group-hover:scale-[1.02]">
+                            <div
+                                class="w-full h-full rounded-xl bg-gradient-to-br from-[#1a1c24] to-[#0d0e12] flex items-center justify-center border border-white/5 relative">
+                                <span
+                                    class="material-symbols-outlined text-6xl text-indigo-500/20">install_mobile</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="w-full lg:w-7/12 flex flex-col justify-center">
+                        <div class="flex gap-3 mb-6">
+                            <span
+                                class="px-3 py-1 bg-white/5 border border-white/10 rounded-md text-[10px] uppercase tracking-wider font-mono text-slate-400">Tech</span>
+                        </div>
+                        <h2 class="text-4xl md:text-5xl font-bold text-white mb-2 tracking-tight">APP PROMO</h2>
+                        <div class="w-32 h-1 bg-primary mb-6"></div>
+                        <p class="text-slate-400 mb-10 text-lg leading-relaxed">Modern SaaS promotion visual.
+                            Glassmorphism panels and futuristic 3D glow.</p>
+                        <div class="terminal-window rounded-xl overflow-hidden font-mono text-sm relative group">
+                            <div
+                                class="bg-[#1a1c23] px-4 py-2 border-b border-white/5 flex items-center justify-between">
+                                <span class="text-xs text-slate-500 tracking-widest uppercase">PROMPT #10</span>
+                                <button onclick="copyPrompt('prompt-10')"
+                                    class="flex items-center gap-2 bg-green-500/10 hover:bg-green-500/20 text-green-400 px-3 py-1 rounded text-xs font-bold transition-colors border border-green-500/20">
+                                    <span class="material-symbols-outlined text-[14px]">content_copy</span> COPY
+                                </button>
+                            </div>
+                            <div class="p-6 custom-scrollbar max-h-[350px] overflow-y-auto">
+                                <pre id="prompt-10" class="whitespace-pre-wrap text-slate-300 leading-relaxed"><span class="color-header">Design a modern SaaS promotion.</span>
+
+<span class="color-key">App Name:</span> <span class="color-var">(الاسم)</span>
+<span class="color-key">Benefit:</span> <span class="color-highlight">(الحل السريع)</span>
+
+<span class="color-separator">────────────────</span>
+<span class="color-header">STYLE GUIDE:</span>
+- <span class="color-highlight">Glassmorphism</span> UI layers
+- Cinematic depth of field
+- Futuristic tech glow
+- Multi-layer 3D environment</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+
+        <footer class="relative z-10 w-full border-t border-white/5 py-10 px-6">
+            <div class="max-w-7xl mx-auto flex flex-col items-center">
+                <div class="flex items-center gap-6 mb-8 text-slate-400">
+                    <a href="#" class="hover:text-white transition-colors flex items-center gap-2">
+                        <span class="material-symbols-outlined text-xl">camera</span>
+                        <span class="text-sm font-bold">Instagram</span>
+                    </a>
+                    <a href="#" class="hover:text-white transition-colors flex items-center gap-2">
+                        <span class="material-symbols-outlined text-xl">work</span>
+                        <span class="text-sm font-bold">LinkedIn</span>
+                    </a>
+                    <a href="#" class="hover:text-white transition-colors flex items-center gap-2">
+                        <span class="material-symbols-outlined text-xl">code</span>
+                        <span class="text-sm font-bold">GitHub</span>
+                    </a>
+                </div>
+                <p class="text-slate-500 text-sm">© 2026 Elite Creative Agency | Created by isl8m.r</p>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Official Antigravity Interaction Engine
+        const cursorDot = document.getElementById('cursor-dot');
+        const cursorGlow = document.getElementById('cursor-glow');
+        const canvas = document.getElementById('antigravity-nodes');
+        const ctx = canvas.getContext('2d');
+
+        let mouse = { x: -1000, y: -1000 };
+        let particles = [];
+        const particleCount = 120;
+
+        // Resize Canvas
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        // Particle Class
+        class Particle {
+            constructor() {
+                this.init();
+            }
+            init() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 0.5;
+                this.baseX = this.x;
+                this.baseY = this.y;
+                this.density = (Math.random() * 30) + 1;
+                this.color = `rgba(13, 13, 242, ${Math.random() * 0.4})`;
+            }
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.closePath();
+                ctx.fill();
+            }
+            update() {
+                let dx = mouse.x - this.x;
+                let dy = mouse.y - this.y;
+                let distance = Math.sqrt(dx * dx + dy * dy);
+                let forceDirectionX = dx / distance;
+                let forceDirectionY = dy / distance;
+                let maxDistance = 150;
+                let force = (maxDistance - distance) / maxDistance;
+                let directionX = forceDirectionX * force * this.density;
+                let directionY = forceDirectionY * force * this.density;
+
+                if (distance < maxDistance) {
+                    this.x -= directionX;
+                    this.y -= directionY;
+                } else {
+                    if (this.x !== this.baseX) {
+                        let dx = this.x - this.baseX;
+                        this.x -= dx / 10;
+                    }
+                    if (this.y !== this.baseY) {
+                        let dy = this.y - this.baseY;
+                        this.y -= dy / 10;
+                    }
+                }
+            }
+        }
+
+        for (let i = 0; i < particleCount; i++) {
+            particles.push(new Particle());
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].draw();
+                particles[i].update();
+            }
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        // Interaction Handling
+        document.addEventListener('mousemove', (e) => {
+            const { clientX: x, clientY: y } = e;
+            mouse.x = x;
+            mouse.y = y;
+
+            cursorDot.style.left = x + 'px';
+            cursorDot.style.top = y + 'px';
+            cursorGlow.style.left = x + 'px';
+            cursorGlow.style.top = y + 'px';
+
+            // 3D Tilt Horizon Effect
+            document.querySelectorAll('.tilt-card').forEach(card => {
+                const rect = card.getBoundingClientRect();
+                const centerX = rect.left + rect.width / 2;
+                const centerY = rect.top + rect.height / 2;
+
+                const rotateX = (y - centerY) / 20 * -1;
+                const rotateY = (x - centerX) / 20;
+
+                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+            });
+
+            // Magnetic Button Logic
+            const magneticBtn = document.querySelector('.magnetic-wrap');
+            const btnRect = magneticBtn.getBoundingClientRect();
+            const btnCenterX = btnRect.left + btnRect.width / 2;
+            const btnCenterY = btnRect.top + btnRect.height / 2;
+
+            const dist = Math.sqrt(Math.pow(x - btnCenterX, 2) + Math.pow(y - btnCenterY, 2));
+
+            if (dist < 100) {
+                const moveX = (x - btnCenterX) * 0.4;
+                const moveY = (y - btnCenterY) * 0.4;
+                magneticBtn.style.transform = `translate(${moveX}px, ${moveY}px)`;
+                cursorDot.classList.add('active');
+            } else {
+                magneticBtn.style.transform = `translate(0, 0)`;
+                cursorDot.classList.remove('active');
+            }
+        });
+
+        function copyPrompt(id) {
+            const text = document.getElementById(id).innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                const toast = document.getElementById('copy-toast');
+                toast.classList.add('show');
+                setTimeout(() => { toast.classList.remove('show'); }, 3000);
+            });
+        }
+    </script>
+</body>
+
+</html>
