@@ -13,6 +13,11 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
         rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="Prompts Library Favicon 16x16.png">
+
     <script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
@@ -28,6 +33,7 @@
                     fontFamily: {
                         "display": ["Space Grotesk", "sans-serif"],
                         "mono": ["JetBrains Mono", "monospace"],
+                        "arabic": ["Tajawal", "sans-serif"],
                     },
                     borderRadius: { "DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px" },
                 },
@@ -252,7 +258,7 @@
                             </div>
                             <div
                                 class="w-full aspect-square rounded-xl bg-gradient-to-br from-[#1a1c24] to-[#0d0e12] flex items-center justify-center border border-white/5 relative overflow-hidden">
-                                <span class="material-symbols-outlined text-6xl text-white/5">grid_view</span>
+                                <span class="material-symbols-outlined text-6xl text-white/5"><img src="41fce68f-87f1-4e3e-b4c8-521e3394ef17.png" alt=""></span>
                             </div>
                         </div>
                     </div>
@@ -262,11 +268,10 @@
                                 class="px-3 py-1 bg-white/5 border border-white/10 rounded-md text-[10px] uppercase tracking-wider font-mono text-slate-400">Social
                                 Media</span>
                         </div>
-                        <h2 class="text-4xl md:text-5xl font-bold text-white mb-2 tracking-tight">INSTAGRAM POST <span
-                                class="text-slate-500">(4:5)</span></h2>
-                        <div class="w-32 h-1 bg-primary mb-6"></div>
-                        <p class="text-slate-400 mb-10 text-lg leading-relaxed">Art Director + 3D Artist combo. Built-in
-                            typography logic and color psychology system.</p>
+                        <h2 class="font-arabic text-4xl md:text-5xl font-bold text-white mb-2 tracking-tight">
+  صورتك العيدية
+</h2>                        <div class="w-32 h-1 bg-primary mb-6"></div>
+                        <p class="font-arabic text-slate-400 mb-10 text-lg leading-relaxed">دمج احترافي يجمع بين فخامة التراث المغاربي ودقة الذكاء الاصطناعي مع الحفاظ التام على ملامحك الأصلية.</p>
                         <div class="terminal-window rounded-xl overflow-hidden font-mono text-sm relative group">
                             <div
                                 class="bg-[#1a1c23] px-4 py-2 border-b border-white/5 flex items-center justify-between">
@@ -277,43 +282,103 @@
                                 </button>
                             </div>
                             <div class="p-6 custom-scrollbar max-h-[350px] overflow-y-auto">
-                                <pre id="prompt-1" class="whitespace-pre-wrap text-slate-300 leading-relaxed"><span class="color-header">Act as an elite creative agency</span> (Art Director + 3D Artist + Typography Director + Brand Strategist + Marketing Psychologist).
+                                <pre id="prompt-1" style="color: #c9d1d9; font-family: 'Courier New', Courier, monospace; padding: 20px; line-height: 1.5; white-space: pre-wrap;">
+<span style="color: #ff79c6; font-weight: bold;">Create a luxury cinematic Eid Al-Fitr greeting photo in a high-end editorial style, blending modern AI creator aesthetic with traditional Eid atmosphere.</span>
 
-<span class="color-key">FORMAT:</span> <span class="color-highlight">4:5 – 1080x1350</span>
-<span class="color-key">Grid System:</span>
-- <span class="color-highlight">Top 30%</span> → Hook Zone
-- <span class="color-highlight">Middle 50%</span> → Main Visual Focus
-- <span class="color-highlight">Bottom 20%</span> → CTA / Branding
-Respect safe margins.
+<span style="color: #8be9fd; font-weight: bold;">Subject (Strict Identity Lock — Critical)</span>
+<span style="color: #bd93f9;">Use the uploaded image as the identity reference.</span>
+Apply hard identity preservation constraints:
+• DO NOT regenerate the face
+• DO NOT reinterpret facial features
+• DO NOT beautify or stylize the face
+• DO NOT change age, expression, or proportions
+Preserve EXACTLY:
+• facial structure (jawline, cheekbones, face shape)
+• eyes (shape, spacing, eyelids)
+• nose (size and proportions)
+• lips (shape and natural texture)
+• skin tone and undertone
+• real skin texture (pores, طبیعی imperfections)
+u can change the pose to match the photo
+<span style="color: #f1fa8c;">The face must remain pixel-consistent with the original identity.</span>
 
-<span class="color-separator">────────────────</span>
-<span class="color-key">Brand Name:</span> <span class="color-var">(اكتب اسم البراند)</span>
-<span class="color-key">Industry:</span> <span class="color-var">(اكتب المجال)</span>
-<span class="color-key">Target Audience:</span> <span class="color-var">(من هو الجمهور؟)</span>
-<span class="color-key">Goal:</span> <span class="color-var">(تعليمي / بيع / جذب / توعية)</span>
-<span class="color-key">Topic:</span> <span class="color-var">(موضوع البوست)</span>
-<span class="color-key">Primary Headline:</span> <span class="color-var">"(العنوان الرئيسي)"</span>
+<span style="color: #ffb86c; font-weight: bold;">Face Preservation Technique (Mandatory)</span>
+• use face lock / identity lock
+• prioritize the original face over all stylization
+• if conflict occurs between style and identity → KEEP IDENTITY
+• avoid any diffusion-based face reconstruction
+<span style="color: #f1fa8c;">The result must look like:</span>
+👉 the SAME person placed in a new environment
+NOT a recreated or AI-generated version
 
-<span class="color-separator">────────────────</span>
-<span class="color-header">TYPOGRAPHY ENGINE:</span>
-Auto-select based on Industry:
-- <span class="color-highlight">Tech</span> → Geometric sans
-- <span class="color-highlight">Luxury</span> → Elegant serif
-- <span class="color-highlight">Edu</span> → Structured bold sans
-- <span class="color-highlight">Creative</span> → Display fonts
+<span style="color: #50fa7b;">• for men: traditional قميص (elegant, clean, premium fabric)</span>
+<span style="color: #50fa7b;">• for women: stylish العباية with subtle luxurious details</span>
+<span style="color: #f1fa8c;">Clothing must look:</span>
+• realistic
+• high-end
+• culturally appropriate
+• consistent with lighting and environment
 
-<span class="color-separator">────────────────</span>
-<span class="color-header">COLOR SYSTEM:</span>
-Apply <span class="color-highlight">60-30-10 rule</span>.
-- <span class="color-highlight">Blue</span> → Trust/Tech
-- <span class="color-highlight">Red</span> → Urgency
-- <span class="color-highlight">Purple</span> → Innovation
+<span style="color: #8be9fd; font-weight: bold;">Scene & Environment</span>
+Set the scene in a luxury Eid environment inspired by Algeria / Maghreb.
+Include:
+• elegant Islamic architecture
+• warm glowing lanterns
+• Eid decorations
+• soft fireworks in the background
+<span style="color: #f1fa8c;">Foreground:</span>
+• refined Eid sweets (حلويات تقليدية)
+• decorative lanterns
+• subtle floral arrangement
+Subject placed naturally in the center, fully integrated in the environment.
 
-<span class="color-separator">────────────────</span>
-<span class="color-header">3D LOGIC:</span>
-- Symbolic 3D elements
-- Realistic depth of field
-- Mobile optimized scroll stopping.</pre>
+<span style="color: #ff79c6; font-weight: bold;">Lighting & Color</span>
+• warm golden cinematic lighting
+• soft ambient glow from lanterns
+• subtle highlights on face and clothing
+• realistic shadows
+<span style="color: #ffb86c;">Color palette:</span>
+• gold
+• warm amber
+• soft dark background
+Everything must feel unified and premium.
+
+<span style="color: #ff5555; font-weight: bold;">Creator Twist (Your Style 🔥)</span>
+Add a modern AI creator touch (subtle, not overpowering):
+• very light floating UI lines or glow accents
+• minimal digital particles
+• slight cinematic contrast like tech thumbnails
+This keeps your personal branding style.
+
+<span style="color: #8be9fd; font-weight: bold;">Typography</span>
+Add elegant Arabic text:
+<span style="color: #f1fa8c; font-size: 1.2em;">عيد مبارك</span>
+<span style="color: #bd93f9;">Typography style:</span>
+• luxury Arabic calligraphy
+• gold or soft glowing effect
+• clean and balanced
+
+<span style="color: #50fa7b; font-weight: bold;">Composition</span>
+• subject centered
+• foreground elements for depth
+• shallow depth of field
+• cinematic framing
+<span style="color: #ff79c6; font-weight: bold;">Optimized for Instagram Reel cover (4:5).</span>
+
+<span style="color: #bd93f9; font-weight: bold;">Style</span>
+• luxury editorial photography
+• cinematic lighting
+• ultra-realistic textures
+• high-end magazine look
+No clutter. No distortion. No extra faces.
+
+<span style="color: #f1fa8c; font-weight: bold;">Output Quality</span>
+• ultra high resolution
+• sharp details
+• realistic blending
+• no artifacts
+• no watermark
+</pre>
                             </div>
                         </div>
                     </div>
@@ -824,128 +889,6 @@ Apply <span class="color-highlight">60-30-10 rule</span>.
     </div>
 
     <script>
-        // Official Antigravity Interaction Engine
-        const cursorDot = document.getElementById('cursor-dot');
-        const cursorGlow = document.getElementById('cursor-glow');
-        const canvas = document.getElementById('antigravity-nodes');
-        const ctx = canvas.getContext('2d');
-
-        let mouse = { x: -1000, y: -1000 };
-        let particles = [];
-        const particleCount = 120;
-
-        // Resize Canvas
-        function resize() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
-        window.addEventListener('resize', resize);
-        resize();
-
-        // Particle Class
-        class Particle {
-            constructor() {
-                this.init();
-            }
-            init() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 2 + 0.5;
-                this.baseX = this.x;
-                this.baseY = this.y;
-                this.density = (Math.random() * 30) + 1;
-                this.color = `rgba(13, 13, 242, ${Math.random() * 0.4})`;
-            }
-            draw() {
-                ctx.fillStyle = this.color;
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.closePath();
-                ctx.fill();
-            }
-            update() {
-                let dx = mouse.x - this.x;
-                let dy = mouse.y - this.y;
-                let distance = Math.sqrt(dx * dx + dy * dy);
-                let forceDirectionX = dx / distance;
-                let forceDirectionY = dy / distance;
-                let maxDistance = 150;
-                let force = (maxDistance - distance) / maxDistance;
-                let directionX = forceDirectionX * force * this.density;
-                let directionY = forceDirectionY * force * this.density;
-
-                if (distance < maxDistance) {
-                    this.x -= directionX;
-                    this.y -= directionY;
-                } else {
-                    if (this.x !== this.baseX) {
-                        let dx = this.x - this.baseX;
-                        this.x -= dx / 10;
-                    }
-                    if (this.y !== this.baseY) {
-                        let dy = this.y - this.baseY;
-                        this.y -= dy / 10;
-                    }
-                }
-            }
-        }
-
-        for (let i = 0; i < particleCount; i++) {
-            particles.push(new Particle());
-        }
-
-        function animate() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            for (let i = 0; i < particles.length; i++) {
-                particles[i].draw();
-                particles[i].update();
-            }
-            requestAnimationFrame(animate);
-        }
-        animate();
-
-        // Interaction Handling
-        document.addEventListener('mousemove', (e) => {
-            const { clientX: x, clientY: y } = e;
-            mouse.x = x;
-            mouse.y = y;
-
-            cursorDot.style.left = x + 'px';
-            cursorDot.style.top = y + 'px';
-            cursorGlow.style.left = x + 'px';
-            cursorGlow.style.top = y + 'px';
-
-            // 3D Tilt Horizon Effect
-            document.querySelectorAll('.tilt-card').forEach(card => {
-                const rect = card.getBoundingClientRect();
-                const centerX = rect.left + rect.width / 2;
-                const centerY = rect.top + rect.height / 2;
-
-                const rotateX = (y - centerY) / 20 * -1;
-                const rotateY = (x - centerX) / 20;
-
-                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
-            });
-
-            // Magnetic Button Logic
-            const magneticBtn = document.querySelector('.magnetic-wrap');
-            const btnRect = magneticBtn.getBoundingClientRect();
-            const btnCenterX = btnRect.left + btnRect.width / 2;
-            const btnCenterY = btnRect.top + btnRect.height / 2;
-
-            const dist = Math.sqrt(Math.pow(x - btnCenterX, 2) + Math.pow(y - btnCenterY, 2));
-
-            if (dist < 100) {
-                const moveX = (x - btnCenterX) * 0.4;
-                const moveY = (y - btnCenterY) * 0.4;
-                magneticBtn.style.transform = `translate(${moveX}px, ${moveY}px)`;
-                cursorDot.classList.add('active');
-            } else {
-                magneticBtn.style.transform = `translate(0, 0)`;
-                cursorDot.classList.remove('active');
-            }
-        });
-
         function copyPrompt(id) {
             const text = document.getElementById(id).innerText;
             navigator.clipboard.writeText(text).then(() => {
